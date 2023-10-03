@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "126556260007",
+    "project_id": "relaxing-sound-76b85",
+    "storage_bucket": "relaxing-sound-76b85.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:126556260007:android:537b63d20cf66cb9f2bd82",
+        "android_client_info": {
+          "package_name": "com.ostudio.relaxingsound"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzuoe2kELP_t7V3ZXSJRASXP4i4jbLu4Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
