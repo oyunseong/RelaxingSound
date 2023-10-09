@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.ostudio.relaxingsound.snackbar.SnackbarManager
 import com.ostudio.relaxingsound.ui.alarm.AlarmScreen
 import com.ostudio.relaxingsound.ui.home.HomeScreen
 import com.ostudio.relaxingsound.ui.navigation.model.NavScreen
@@ -14,6 +15,7 @@ import com.ostudio.relaxingsound.ui.navigation.model.NavScreen
 fun NavGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
+    snackbarManager: SnackbarManager //= SnackbarManager(),
 ) {
     NavHost(
         modifier = modifier,
@@ -22,11 +24,11 @@ fun NavGraph(
         startDestination = NavScreen.HOME.name
     ) {
         composable(route = NavScreen.HOME.name){
-            HomeScreen()
+            HomeScreen(snackbarManager = snackbarManager)
         }
 
         composable(route = NavScreen.ALARM.name){
-            AlarmScreen()
+            AlarmScreen(snackbarManager = snackbarManager)
         }
 
     }
