@@ -6,9 +6,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -16,7 +15,6 @@ import androidx.navigation.compose.rememberNavController
 import com.ostudio.relaxingsound.extensions.showToast
 import com.ostudio.relaxingsound.snackbar.Snackbar
 import com.ostudio.relaxingsound.snackbar.SnackbarManager
-import com.ostudio.relaxingsound.snackbar.SnackbarMessage
 import com.ostudio.relaxingsound.ui.components.BottomNavigationBar
 import com.ostudio.relaxingsound.ui.components.bottomBarHeight
 import com.ostudio.relaxingsound.ui.navigation.graph.NavGraph
@@ -32,7 +30,7 @@ fun RelaxingSoundApp(
     val context = LocalContext.current
     var start: Long = 0
     var end: Long = 0
-    val snackbarState = remember { mutableStateOf<SnackbarMessage?>(null) }
+    val snackbar by SnackbarManager.showingMessage.collectAsState()
 
     BackHandler {
         if (end > System.currentTimeMillis()) {
@@ -58,14 +56,7 @@ fun RelaxingSoundApp(
         )
     }
 
-    LaunchedEffect(key1 = Unit, block = {
-        SnackbarManager.message.collect {
-            snackbarState.value = it
-        }
-    })
-
-    if (snackbarState.value != null) {
-        requireNotNull(snackbarState.value)
-        Snackbar(message = snackbarState.value!!.copy(isVisible = true))
+    snackbar?.let {
+        Snackbar(message = it.copy(isVisible = true))
     }
 }

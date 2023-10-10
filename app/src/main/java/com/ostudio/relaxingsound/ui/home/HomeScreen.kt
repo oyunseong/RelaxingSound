@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.ostudio.relaxingsound.snackbar.SnackbarDuration
 import com.ostudio.relaxingsound.snackbar.SnackbarManager
+import com.ostudio.relaxingsound.snackbar.SnackbarManager2
 import com.ostudio.relaxingsound.snackbar.SnackbarMessage
 import com.ostudio.relaxingsound.snackbar.SnackbarMessageType
 import com.ostudio.relaxingsound.ui.video.ExoVideoPlayer
@@ -38,12 +39,12 @@ suspend fun createSnackbarMessage(location: String = "Home") {
     count += 1
     val snackbarMessage =
         SnackbarMessage(
-            message = "Test Message $count from $location",
+            message = "Test Message $count from $location 222",
             type = SnackbarMessageType.SUCCESS,
             duration = SnackbarDuration.Default
         )
 
-    SnackbarManager.showMessage(snackbarMessage = snackbarMessage)
+    SnackbarManager2.showSnackbar(snackbarMessage = snackbarMessage)
 }
 
 @Preview

@@ -59,7 +59,7 @@ fun Snackbar(message: SnackbarMessage) {
         message = message.message,
         type = message.type,
         location = Alignment.BottomCenter,
-        isVisible = isVisible
+        isVisible = message.isVisible
     )
 }
 
