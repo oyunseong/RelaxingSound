@@ -15,7 +15,6 @@ import com.ostudio.relaxingsound.ui.navigation.model.NavScreen
 fun NavGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    snackbarManager: SnackbarManager //= SnackbarManager(),
 ) {
     NavHost(
         modifier = modifier,
@@ -24,11 +23,11 @@ fun NavGraph(
         startDestination = NavScreen.HOME.name
     ) {
         composable(route = NavScreen.HOME.name){
-            HomeScreen(snackbarManager = snackbarManager)
+            HomeScreen()
         }
 
         composable(route = NavScreen.ALARM.name){
-            AlarmScreen(snackbarManager = snackbarManager)
+            AlarmScreen()
         }
 
     }

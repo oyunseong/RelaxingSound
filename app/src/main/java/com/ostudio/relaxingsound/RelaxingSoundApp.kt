@@ -25,7 +25,6 @@ import com.ostudio.relaxingsound.ui.navigation.graph.NavGraph
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RelaxingSoundApp(
-    snackbarManager: SnackbarManager,
     onFinished: () -> Unit = {}
 ) {
     val navController = rememberNavController()
@@ -56,17 +55,17 @@ fun RelaxingSoundApp(
         NavGraph(
             modifier = Modifier.padding(bottom = bottomPadding),
             navController = navController,
-            snackbarManager = snackbarManager
         )
     }
 
     LaunchedEffect(key1 = Unit, block = {
-        snackbarManager.message.collect {
+        SnackbarManager.message.collect {
             snackbarState.value = it
         }
     })
 
     if (snackbarState.value != null) {
-        Snackbar(snackbarData = snackbarState.value!!)
+        requireNotNull(snackbarState.value)
+        Snackbar(message = snackbarState.value!!)
     }
 }

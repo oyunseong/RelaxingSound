@@ -1,7 +1,6 @@
 package com.ostudio.relaxingsound.snackbar
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,14 +23,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ostudio.relaxingsound.R
 import com.ostudio.relaxingsound.ui.theme.Gray600
+import com.ostudio.relaxingsound.ui.theme.snackbarFontStyle
 
 
 @Composable
-fun Snackbar(snackbarData: SnackbarMessage) {
+fun Snackbar(message: SnackbarMessage) {
     SnackbarContent(
-        message = snackbarData.message,
-        type = snackbarData.type,
-//        location = TODO 추가
+        message = message.message,
+        type = message.type,
+        location = Alignment.BottomCenter
     )
 }
 
@@ -70,7 +70,7 @@ private fun SnackbarContent(
                     Text(
                         text = message,
                         color = Color.White,
-//                        style = body2,
+                        style = snackbarFontStyle,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
