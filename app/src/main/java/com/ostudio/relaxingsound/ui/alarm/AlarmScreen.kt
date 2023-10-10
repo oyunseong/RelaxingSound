@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.ostudio.relaxingsound.alarm.AlarmFunctions
+import com.ostudio.relaxingsound.snackbar.SnackbarDuration
 import com.ostudio.relaxingsound.snackbar.SnackbarManager
 import com.ostudio.relaxingsound.snackbar.SnackbarMessage
 import com.ostudio.relaxingsound.snackbar.SnackbarMessageType
@@ -49,8 +50,9 @@ fun AlarmScreen() {
                 is NullPointerException -> {
                     SnackbarManager.showMessage(
                         SnackbarMessage(
-                            message = "Null pointer Exception",
-                            type = SnackbarMessageType.ERROR,
+                            message = "short duration",
+                            type = SnackbarMessageType.WARNING,
+                            duration = SnackbarDuration.Short
                         )
                     )
                 }
@@ -105,9 +107,12 @@ fun AlarmScreen() {
             },
             modifier = Modifier
                 .padding(16.dp)
-                .offset(x = animateDpAsState(targetValue = offset, animationSpec = tween(),
-                    label = ""
-                ).value)
+                .offset(
+                    x = animateDpAsState(
+                        targetValue = offset, animationSpec = tween(),
+                        label = ""
+                    ).value
+                )
         ) {
             Text(text = "애니메이션")
         }

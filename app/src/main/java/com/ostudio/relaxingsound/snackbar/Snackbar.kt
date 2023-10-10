@@ -1,5 +1,8 @@
 package com.ostudio.relaxingsound.snackbar
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -14,6 +17,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,14 +32,34 @@ import androidx.compose.ui.unit.dp
 import com.ostudio.relaxingsound.R
 import com.ostudio.relaxingsound.ui.theme.Gray600
 import com.ostudio.relaxingsound.ui.theme.snackbarFontStyle
+import kotlinx.coroutines.delay
 
 
 @Composable
 fun Snackbar(message: SnackbarMessage) {
+    var isVisible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(key1 = message, block = {
+        when (message.duration) {
+            SnackbarDuration.Indefinite -> {
+                isVisible = true
+            }
+
+            else -> {
+                isVisible = true
+                delay(message.duration.toMillis() - 300L)
+                isVisible = false
+            }
+
+        }
+
+    })
+
     SnackbarContent(
         message = message.message,
         type = message.type,
         location = Alignment.BottomCenter,
+        isVisible = isVisible
     )
 }
 
@@ -41,44 +69,51 @@ private fun SnackbarContent(
     message: String = "",
     type: SnackbarMessageType = SnackbarMessageType.NONE,
     location: Alignment = Alignment.BottomCenter,
+    isVisible: Boolean = false,
 ) {
     Box(
         modifier = modifier
             .fillMaxSize()
     ) {
-        Card(
-            modifier = Modifier
-                .align(location)
-                .padding(horizontal = 10.dp, vertical = 16.dp)
-                .fillMaxWidth()
-                .height(60.dp),
-            shape = RoundedCornerShape(16.dp),
-            backgroundColor = Gray600, // Color(0xFF4B5563)
+        AnimatedVisibility(
+            modifier = Modifier.align(location),
+            visible = isVisible,
+            enter = slideInVertically(initialOffsetY = { it }),
+            exit = slideOutVertically(targetOffsetY = { it })
         ) {
-            Box(
+            Card(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
+                    .align(location)
+                    .padding(horizontal = 10.dp, vertical = 16.dp)
+                    .fillMaxWidth()
+                    .height(60.dp),
+                shape = RoundedCornerShape(16.dp),
+                backgroundColor = Gray600, // Color(0xFF4B5563)
             ) {
-                Row(
-                    modifier = Modifier.align(Alignment.CenterStart),
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
                 ) {
-                    SnackbarIcon(type = type)
-                    if (type != SnackbarMessageType.NONE) {
-                        Spacer(modifier = Modifier.width(10.dp))
+                    Row(
+                        modifier = Modifier.align(Alignment.CenterStart),
+                    ) {
+                        SnackbarIcon(type = type)
+                        if (type != SnackbarMessageType.NONE) {
+                            Spacer(modifier = Modifier.width(10.dp))
+                        }
+                        Text(
+                            text = message,
+                            color = Color.White,
+                            style = snackbarFontStyle,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
                     }
-                    Text(
-                        text = message,
-                        color = Color.White,
-                        style = snackbarFontStyle,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
                 }
             }
         }
     }
 }
-//}
 
 
 @Composable

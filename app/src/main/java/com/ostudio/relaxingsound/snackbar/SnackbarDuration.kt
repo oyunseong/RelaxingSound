@@ -2,7 +2,10 @@ package com.ostudio.relaxingsound.snackbar
 
 
 enum class SnackbarDuration {
-    Short, Default, Long, Indefinite,
+    Short,
+    Default,
+    Long,
+    Indefinite,
 }
 
 fun SnackbarDuration.toMillis(): Long {

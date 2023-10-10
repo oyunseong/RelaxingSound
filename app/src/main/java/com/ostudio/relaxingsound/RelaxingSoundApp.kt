@@ -66,6 +66,6 @@ fun RelaxingSoundApp(
 
     if (snackbarState.value != null) {
         requireNotNull(snackbarState.value)
-        Snackbar(message = snackbarState.value!!)
+        Snackbar(message = snackbarState.value!!.copy(isVisible = true))
     }
 }
