@@ -31,7 +31,7 @@ fun Snackbar(message: SnackbarMessage) {
     SnackbarContent(
         message = message.message,
         type = message.type,
-        location = Alignment.BottomCenter
+        location = Alignment.BottomCenter,
     )
 }
 
@@ -40,7 +40,7 @@ private fun SnackbarContent(
     modifier: Modifier = Modifier,
     message: String = "",
     type: SnackbarMessageType = SnackbarMessageType.NONE,
-    location: Alignment = Alignment.BottomCenter
+    location: Alignment = Alignment.BottomCenter,
 ) {
     Box(
         modifier = modifier
@@ -48,10 +48,10 @@ private fun SnackbarContent(
     ) {
         Card(
             modifier = Modifier
+                .align(location)
                 .padding(horizontal = 10.dp, vertical = 16.dp)
                 .fillMaxWidth()
-                .height(60.dp)
-                .align(location),
+                .height(60.dp),
             shape = RoundedCornerShape(16.dp),
             backgroundColor = Gray600, // Color(0xFF4B5563)
         ) {
@@ -62,7 +62,6 @@ private fun SnackbarContent(
                 Row(
                     modifier = Modifier.align(Alignment.CenterStart),
                 ) {
-
                     SnackbarIcon(type = type)
                     if (type != SnackbarMessageType.NONE) {
                         Spacer(modifier = Modifier.width(10.dp))
@@ -79,6 +78,8 @@ private fun SnackbarContent(
         }
     }
 }
+//}
+
 
 @Composable
 private fun SnackbarIcon(type: SnackbarMessageType) {

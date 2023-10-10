@@ -10,13 +10,13 @@ import java.util.Queue
 
 
 object SnackbarManager {
-    private val messages: MutableStateFlow<Queue<SnackbarMessage>> = MutableStateFlow(LinkedList())
+    private val messages: Queue<SnackbarMessage> = LinkedList()
     val message: MutableStateFlow<SnackbarMessage?> = MutableStateFlow(null)
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
     fun showMessage(snackbarMessage: SnackbarMessage) {
-        messages.value.offer(snackbarMessage)
+        messages.offer(snackbarMessage)
         if (message.value == null) {
             showNextMessage()
         }
@@ -27,7 +27,7 @@ object SnackbarManager {
         type: SnackbarMessageType = SnackbarMessageType.NONE,
         duration: SnackbarDuration = SnackbarDuration.Default,
     ) {
-        messages.value.offer(
+        messages.offer(
             SnackbarMessage(
                 message = title,
                 type = type,
@@ -49,16 +49,14 @@ object SnackbarManager {
      */
     private fun showNextMessage() {
         coroutineScope.launch {
-            val currentMessage = messages.value.poll()
+            val currentMessage = messages.poll()
 
             if (currentMessage != null) {
                 // 꺼낸 메시지를 UI에 표시합니다.
-//                message.value = currentMessage
                 message.emit(currentMessage)
 
                 // 메시지의 지속 시간 동안 대기합니다.
                 delay(currentMessage.duration.toMillis())
-
                 // 메시지를 감춥니다.
                 message.emit(null)
 
@@ -69,7 +67,7 @@ object SnackbarManager {
     }
 
     fun clear() {
-        messages.value.clear()
+        messages.clear()
     }
 
 }

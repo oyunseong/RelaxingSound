@@ -1,13 +1,22 @@
 package com.ostudio.relaxingsound.ui.alarm
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import com.ostudio.relaxingsound.alarm.AlarmFunctions
 import com.ostudio.relaxingsound.snackbar.SnackbarManager
 import com.ostudio.relaxingsound.snackbar.SnackbarMessage
@@ -85,6 +94,22 @@ fun AlarmScreen() {
         // Exception 발생 시키는 버튼
         Button(onClick = { createException(error) }) {
             Text(text = "예외")
+        }
+
+        var offset by remember { mutableStateOf(0.dp) }
+
+        Button(
+            onClick = {
+                // 버튼을 클릭할 때마다 offset을 10.dp 증가시킵니다.
+                offset += 10.dp
+            },
+            modifier = Modifier
+                .padding(16.dp)
+                .offset(x = animateDpAsState(targetValue = offset, animationSpec = tween(),
+                    label = ""
+                ).value)
+        ) {
+            Text(text = "애니메이션")
         }
     }
 
