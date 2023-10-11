@@ -1,9 +1,7 @@
 package com.ostudio.relaxingsound.snackbar
 
-import androidx.compose.animation.AnimatedVisibility
+import android.util.Log
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -38,12 +36,26 @@ import kotlinx.coroutines.delay
 
 
 @Composable
-fun Snackbar(message: SnackbarMessage) {
+fun Snackbar(
+    message: SnackbarMessage,
+    pop: () -> Unit,
+) {
+    var visible by remember { mutableStateOf(true) }
+
+    LaunchedEffect(key1 = Unit, block = {
+        Log.d("++##", "${message.message} start ")
+        delay(message.duration.toMillis())
+        visible = false
+        Log.d("++##", "${message.message} visible false")
+        delay(500L)
+        pop.invoke()
+    })
+
     SnackbarContent(
         message = message.message,
         type = message.type,
         location = Alignment.BottomCenter,
-        isVisible = message.isVisible
+        isVisible = visible
     )
 }
 
@@ -53,7 +65,7 @@ private fun SnackbarContent(
     message: String = "",
     type: SnackbarMessageType = SnackbarMessageType.NONE,
     location: Alignment = Alignment.BottomCenter,
-    isVisible: Boolean = false,
+    isVisible: Boolean = true,
 ) {
     var offsetY by remember { mutableStateOf((76).dp) }
 
@@ -75,7 +87,7 @@ private fun SnackbarContent(
 
 //        AnimatedVisibility(
 //            modifier = Modifier.align(location),
-//            visible = true,
+//            visible = isVisible,
 //            enter = slideInVertically(initialOffsetY = { it }),
 //            exit = slideOutVertically(targetOffsetY = { it })
 //        ) {
@@ -109,9 +121,9 @@ private fun SnackbarContent(
                     )
                 }
             }
+//        }
         }
     }
-//    }
 }
 
 
