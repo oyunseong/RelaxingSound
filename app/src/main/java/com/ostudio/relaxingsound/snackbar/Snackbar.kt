@@ -2,6 +2,7 @@ package com.ostudio.relaxingsound.snackbar
 
 import android.util.Log
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -79,7 +80,11 @@ private fun SnackbarContent(
         }
     })
 
-    val animatedOffset = animateDpAsState(targetValue = offsetY, label = "")
+    val animatedOffset = animateDpAsState(
+        targetValue = offsetY,
+        label = "",
+        animationSpec = tween(durationMillis = 500)
+    )
     Box(
         modifier = modifier
             .fillMaxSize()
