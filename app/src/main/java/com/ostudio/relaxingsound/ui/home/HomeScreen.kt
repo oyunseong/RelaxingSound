@@ -1,25 +1,31 @@
 package com.ostudio.relaxingsound.ui.home
 
-import androidx.compose.foundation.layout.Box
+import android.util.Log
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.ostudio.relaxingsound.NetworkManager
 import com.ostudio.relaxingsound.snackbar.SnackbarDuration
 import com.ostudio.relaxingsound.snackbar.SnackbarManager
 import com.ostudio.relaxingsound.snackbar.SnackbarMessage
 import com.ostudio.relaxingsound.snackbar.SnackbarMessageType
-import com.ostudio.relaxingsound.ui.video.ExoVideoPlayer
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen() {
     val scope = rememberCoroutineScope()
-    Box(modifier = Modifier.fillMaxSize()) {
+
+    LaunchedEffect(Unit) {
+
+    }
+
+    Column(modifier = Modifier.fillMaxSize()) {
         Text(text = "홈")
         Button(onClick = {
             scope.launch {
@@ -28,9 +34,21 @@ fun HomeScreen() {
         }) {
             Text(text = "클릭!")
         }
+        Button(onClick = {
+            checkNetwork()
+        }) {
+            Text(text = "네트워크")
+        }
 //        ExoVideoPlayer()
     }
+}
 
+fun checkNetwork() {
+    if(NetworkManager.isNetworkAvailable.value){
+        Log.d("++##", "네트워크 활성화")
+    }else{
+        Log.d("++##", "네트워크 비활성화")
+    }
 }
 
 var count = 0
