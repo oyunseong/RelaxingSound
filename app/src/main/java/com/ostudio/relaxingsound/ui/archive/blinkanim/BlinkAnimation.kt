@@ -1,4 +1,4 @@
-package com.ostudio.relaxingsound.ui.archive
+package com.ostudio.relaxingsound.ui.archive.blinkanim
 
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
