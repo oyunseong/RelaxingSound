@@ -2,6 +2,9 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
+    id("com.google.devtools.ksp")
+    kotlin("kapt")
+//    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -50,6 +53,7 @@ android {
     }
 }
 
+
 dependencies {
 
     implementation("androidx.core:core-ktx:1.9.0")
@@ -67,6 +71,7 @@ dependencies {
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("androidx.navigation:navigation-compose:2.7.2")
     implementation("androidx.compose.material:material:1.5.1")
@@ -74,4 +79,23 @@ dependencies {
 
     implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
     implementation("com.google.firebase:firebase-analytics-ktx")
+//    implementation("com.google.android.exoplayer:exoplayer:2.19.1")
+
+    // media3
+    implementation("androidx.media3:media3-exoplayer:1.1.1")
+    implementation("androidx.media3:media3-ui:1.1.1")
+    implementation("androidx.media3:media3-common:1.1.1")
+    implementation("androidx.media3:media3-session:1.1.1")
+
+    // Dagger - Hilt
+    implementation("com.google.dagger:hilt-android:2.44")
+    kapt("com.google.dagger:hilt-android-compiler:1.1.0")
+    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
+    kapt("androidx.hilt:hilt-compiler:2.44")
+
+    // Glide
+    implementation("com.github.bumptech.glide:glide:4.15.1")
+    implementation ("com.google.accompanist:accompanist-permissions:0.30.0")
+
+
 }
