@@ -12,25 +12,34 @@ object NetworkManager {
     private val _isNetworkAvailable = MutableStateFlow(false)
     val isNetworkAvailable: StateFlow<Boolean> = _isNetworkAvailable.asStateFlow()
 
+    private val networkCallback = object : ConnectivityManager.NetworkCallback() {
+        override fun onAvailable(network: Network) {
+            _isNetworkAvailable.value = true
+        }
+
+        override fun onLost(network: Network) {
+            _isNetworkAvailable.value = false
+        }
+    }
+
     fun initialize(context: Context) {
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-        connectivityManager.registerDefaultNetworkCallback(object :
-            ConnectivityManager.NetworkCallback() {
-            override fun onAvailable(network: Network) {
-                // 네트워크가 사용 가능한 상태로 변경될 때 호출
-                _isNetworkAvailable.value = true
-            }
-
-            override fun onLost(network: Network) {
-                // 네트워크 연결이 손실되었을 때 호출
-                _isNetworkAvailable.value = false
-            }
-        })
+        connectivityManager.registerDefaultNetworkCallback(networkCallback)
 
         // 초기 네트워크 상태 확인
         _isNetworkAvailable.value = checkNetworkStatus(connectivityManager)
+    }
+
+    /***
+     * 네트워크 콜백 해제
+     */
+    fun release(context: Context) {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        connectivityManager.unregisterNetworkCallback(networkCallback)
     }
 
     /**
@@ -47,7 +56,6 @@ object NetworkManager {
         return networkCapabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
     }
 }
-
 //suspend fun observeNetworkState(
 //    onAvailable: () -> Unit = {},
 //    onUnavailable: () -> Unit = {}

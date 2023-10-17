@@ -2,8 +2,8 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
-    id("com.google.devtools.ksp")
-    kotlin("kapt")
+//    id("com.google.devtools.ksp")
+//    kotlin("kapt")
 //    id("com.google.dagger.hilt.android")
 }
 
@@ -88,10 +88,10 @@ dependencies {
     implementation("androidx.media3:media3-session:1.1.1")
 
     // Dagger - Hilt
-    implementation("com.google.dagger:hilt-android:2.44")
-    kapt("com.google.dagger:hilt-android-compiler:1.1.0")
-    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
-    kapt("androidx.hilt:hilt-compiler:2.44")
+//    implementation("com.google.dagger:hilt-android:2.44")
+//    kapt("com.google.dagger:hilt-android-compiler:1.1.0")
+//    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
+//    kapt("androidx.hilt:hilt-compiler:2.44")
 
     // Glide
     implementation("com.github.bumptech.glide:glide:4.15.1")
