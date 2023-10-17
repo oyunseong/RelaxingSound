@@ -8,7 +8,7 @@ data class SnackbarMessage(
     val message: String = "",
     val type: SnackbarMessageType = SnackbarMessageType.NONE,
     val duration: SnackbarDuration = SnackbarDuration.Default,
-    val isVisible: Boolean = false
+    val isVisible: Boolean = true
 )
 
 private fun createUniqueId(): Long {
