@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -58,14 +58,13 @@ fun RelaxingSoundApp(
         )
     }
 
-    LaunchedEffect(key1 = Unit, block = {
-        SnackbarManager.message.collect {
-            snackbarState.value = it
-        }
-    })
+    val snackbar = SnackbarManager.snackbar.collectAsState()
 
-    if (snackbarState.value != null) {
-        requireNotNull(snackbarState.value)
-        Snackbar(message = snackbarState.value!!.copy(isVisible = true))
+    snackbar.value.let { snackbars ->
+        snackbars.forEach {
+            Snackbar(message = it, pop = {
+                SnackbarManager.clearIfAllisInvisible()
+            })
+        }
     }
 }

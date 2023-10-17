@@ -1,8 +1,8 @@
 package com.ostudio.relaxingsound.snackbar
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
+import android.util.Log
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -36,30 +37,26 @@ import kotlinx.coroutines.delay
 
 
 @Composable
-fun Snackbar(message: SnackbarMessage) {
-    var isVisible by remember { mutableStateOf(false) }
+fun Snackbar(
+    message: SnackbarMessage,
+    pop: () -> Unit,
+) {
+    var visible by remember { mutableStateOf(true) }
 
-    LaunchedEffect(key1 = message, block = {
-        when (message.duration) {
-            SnackbarDuration.Indefinite -> {
-                isVisible = true
-            }
-
-            else -> {
-                isVisible = true
-                delay(message.duration.toMillis() - 300L)
-                isVisible = false
-            }
-
-        }
-
+    LaunchedEffect(key1 = Unit, block = {
+        Log.d("++##", "${message.message} start ")
+        delay(message.duration.toMillis())
+        visible = false
+        Log.d("++##", "${message.message} visible false")
+        delay(500L)
+        pop.invoke()
     })
 
     SnackbarContent(
         message = message.message,
         type = message.type,
         location = Alignment.BottomCenter,
-        isVisible = isVisible
+        isVisible = visible
     )
 }
 
@@ -69,48 +66,67 @@ private fun SnackbarContent(
     message: String = "",
     type: SnackbarMessageType = SnackbarMessageType.NONE,
     location: Alignment = Alignment.BottomCenter,
-    isVisible: Boolean = false,
+    isVisible: Boolean = true,
 ) {
+    var offsetY by remember { mutableStateOf((76).dp) }
+
+    LaunchedEffect(Unit) {
+        offsetY = 0.dp
+    }
+
+    LaunchedEffect(key1 = isVisible, block = {
+        if (!isVisible) {
+            offsetY = 76.dp
+        }
+    })
+
+    val animatedOffset = animateDpAsState(
+        targetValue = offsetY,
+        label = "",
+        animationSpec = tween(durationMillis = 500)
+    )
     Box(
         modifier = modifier
             .fillMaxSize()
     ) {
-        AnimatedVisibility(
-            modifier = Modifier.align(location),
-            visible = isVisible,
-            enter = slideInVertically(initialOffsetY = { it }),
-            exit = slideOutVertically(targetOffsetY = { it })
+
+//        AnimatedVisibility(
+//            modifier = Modifier.align(location),
+//            visible = isVisible,
+//            enter = slideInVertically(initialOffsetY = { it }),
+//            exit = slideOutVertically(targetOffsetY = { it })
+//        ) {
+        Card(
+            modifier = Modifier
+                .align(location)
+                .offset(y = animatedOffset.value)
+                .padding(horizontal = 10.dp, vertical = 16.dp)
+                .fillMaxWidth()
+                .height(60.dp),
+            shape = RoundedCornerShape(16.dp),
+            backgroundColor = Gray600, // Color(0xFF4B5563)
         ) {
-            Card(
+            Box(
                 modifier = Modifier
-                    .align(location)
-                    .padding(horizontal = 10.dp, vertical = 16.dp)
-                    .fillMaxWidth()
-                    .height(60.dp),
-                shape = RoundedCornerShape(16.dp),
-                backgroundColor = Gray600, // Color(0xFF4B5563)
+                    .padding(horizontal = 16.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
+                Row(
+                    modifier = Modifier.align(Alignment.CenterStart),
                 ) {
-                    Row(
-                        modifier = Modifier.align(Alignment.CenterStart),
-                    ) {
-                        SnackbarIcon(type = type)
-                        if (type != SnackbarMessageType.NONE) {
-                            Spacer(modifier = Modifier.width(10.dp))
-                        }
-                        Text(
-                            text = message,
-                            color = Color.White,
-                            style = snackbarFontStyle,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
+                    SnackbarIcon(type = type)
+                    if (type != SnackbarMessageType.NONE) {
+                        Spacer(modifier = Modifier.width(10.dp))
                     }
+                    Text(
+                        text = message,
+                        color = Color.White,
+                        style = snackbarFontStyle,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
                 }
             }
+//        }
         }
     }
 }
