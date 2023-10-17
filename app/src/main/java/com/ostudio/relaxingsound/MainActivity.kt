@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        SnackbarManager.clear()
+//        SnackbarManager.clear()
     }
 
 }
