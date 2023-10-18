@@ -1,30 +1,26 @@
 package com.ostudio.relaxingsound.ui.archive.graph
 
-import androidx.compose.foundation.Canvas
+import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -32,182 +28,217 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.ostudio.relaxingsound.ui.theme.Gray400
-import com.ostudio.relaxingsound.ui.theme.Gray600
 import com.ostudio.relaxingsound.ui.theme.Primary500
+import com.ostudio.relaxingsound.ui.theme.body1
 import com.ostudio.relaxingsound.ui.theme.caption2
 import com.ostudio.relaxingsound.ui.theme.dpToPx
 import com.ostudio.relaxingsound.ui.theme.dpToSp
-import kotlin.math.absoluteValue
+import com.ostudio.relaxingsound.ui.theme.pxToDp
+
+data class AxisInfo(
+    val minValue: Float,
+    val maxValue: Float,
+    val axisTick: List<AxisTick>,
+)
+
+data class AxisTick(val position: Int, val value: String)
 
 @Composable
-fun SuperSimpleLineChartWithLabels(
+fun SimpleLineChartWithLabels(
     values: List<Point>,
-    nWeeks: Int,
-    maxY: Int,
-    modifier: Modifier = Modifier
+    xAxisInfo: AxisInfo,
+    yAxisInfo: AxisInfo,
+    modifier: Modifier = Modifier,
 ) {
-    var maxWidth by remember { mutableIntStateOf(0) }
+    var maxWidth by remember { mutableStateOf(IntSize.Zero) }
+
+    LaunchedEffect(key1 = maxWidth, block = {
+        Log.d("@@", "change maxWidth!! $maxWidth@@")
+    })
+
     Column(
         modifier = modifier
-//            .border(width = 1.dp, color = Color.Black)
+            .height(89.dp)  // 입력으로 높이를 고정
             .fillMaxWidth()
-            .background(color = Color.White)
+//            .background(color = Color.Gray)
     ) {
-        Box(modifier = Modifier.height(IntrinsicSize.Min)) {
+        Box(
+            modifier = Modifier.height(IntrinsicSize.Min)
+        ) {
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .padding(bottom = 13.dp),
-                verticalArrangement = Arrangement.SpaceBetween
+                verticalArrangement = Arrangement.spacedBy(15.dp)
             ) {
-                for (i in 0 until maxY) {
-                    Row() {
-                        Box(
-                            modifier = Modifier
-                                .width(9.dp)
-                                .height(15.dp)
-                                .align(Alignment.CenterVertically)
-                        ) {
-                            Text(
-                                modifier = Modifier
-                                    .align(Alignment.CenterEnd),
-                                style = caption2,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                text = i.toString(),
-                                color = Gray400
-                            )
-                        }
-                        GrayLine(
-                            modifier = Modifier
-                                .padding(start = 18.dp)
-                                .align(Alignment.CenterVertically)
-                        )
+                YAxis(axisInfo = yAxisInfo, onSizeChangedText = {
+                    Log.d("++##", "maxWidth change : $it")
+                    if (maxWidth.width <= it.width) {
+                        maxWidth = it
                     }
-                }
+                })
             }
-            Row(
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(start = 21.dp),
-            ) {
-                for (i in 0 until nWeeks) {
-                    Text(
-                        modifier = Modifier.weight(1f), text = "${i + 1}주",
-                        style = caption2,
-                        color = Gray400
-                    )
-                }
-                Text(
-                    text = "n주",
-                    style = caption2,
-                    color = Gray400
-                )
-            }
-            SuperSimpleLineChart(
+            XAxis(
+                maxWidth = maxWidth,
+                xAxisInfo = xAxisInfo
+            )
+            SimpleLineChart(
                 values = values,
-                nWeeks = nWeeks,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .fillMaxSize()
                     .padding(start = 29.dp, bottom = 21.dp)
-//                    .background(color = Color(0x90000000))
             )
         }
     }
+    val a = pxToDp(pixels = 3f)
 }
 
+
 @Composable
-fun SuperSimpleLineChart(
+fun SimpleLineChart(
     values: List<Point>,
-    nWeeks: Int,
     modifier: Modifier
 ) {
-
+    val outCircle = dpToPx(dp = 4f)
+    val inCircle = dpToPx(dp = 2f)
     Box(modifier = modifier
+        .padding(top = 8.dp)
+//        .background(color = Color(0x50FFFF00))
         .drawBehind {
-            val minXValue = values.minOf { it.x }
-            val maxXValue = values.maxOf { it.x }
-            val minYValue = values.minOf { it.y }
-            val maxYValue = values.maxOf { it.y }
-
-            // Define the number of intervals between data points
-            val intervals = nWeeks
-
-            val pixelPoints = values.mapIndexed { index, point ->
-                val xInterval = size.width.absoluteValue / intervals
-                val x = index * xInterval
-
-                val y = point.y.mapValueToDifferentRange(
-                    inMin = minYValue,
-                    inMax = maxYValue,
-                    outMin = size.height,
-                    outMax = 0f
+            val result = values.map {
+                it.copy(
+                    x = it.x * size.width,
+                    y = size.height - it.y * size.height
                 )
-                Point(x, y)
             }
 
             val path = Path()
-            pixelPoints.forEachIndexed { index, point ->
+            result.forEachIndexed { index, point ->
                 if (index == 0) {
+                    // 기준점 이동
                     path.moveTo(point.x, point.y)
                 } else {
+                    // 이전 좌표와 입력된 좌표까지 직선을 추가한다. 입력된 좌표로 기준점 이동
                     path.lineTo(point.x, point.y)
                 }
             }
 
-            // point to point line
+            // 이어진 직선의 UI 커스텀
             drawPath(
                 path = path,
                 color = Primary500,
-                style = Stroke(width = 3f)
+                style = Stroke(width = 4f)
             )
 
             // point indicator
-            pixelPoints.forEach { point ->
+            result.forEach { point ->
                 drawCircle(
                     color = Primary500,
                     center = Offset(point.x, point.y),
-                    radius = 3.dp.toPx()
+                    radius = outCircle
                 )
 
                 drawCircle(
                     color = Color.White,
                     center = Offset(point.x, point.y),
-                    radius = 1.dp.toPx()
+                    radius = inCircle
                 )
             }
         })
 }
 
+@Composable
+private fun BoxScope.XAxis(
+    maxWidth: IntSize,
+    xAxisInfo: AxisInfo
+) {
+    Row(
+        modifier = Modifier
+            .align(Alignment.BottomStart)
+            .padding(start = (maxWidth.width).dp),
+    ) {
+        xAxisInfo.axisTick.forEachIndexed { i, value ->
+            if (xAxisInfo.axisTick.lastIndex == i) {
+                Text(
+                    text = value.value.toString(),
+                    style = caption2,
+                    color = Gray400
+                )
+            } else {
+                Text(
+                    modifier = Modifier.weight(1f), text = value.value.toString(),
+                    style = caption2,
+                    color = Gray400
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun YAxis(
+    axisInfo: AxisInfo,
+    onSizeChangedText: (IntSize) -> Unit = {},
+) {
+    axisInfo.axisTick.asReversed().also {
+        it.forEachIndexed { i, axis ->
+            Row(
+            ) {
+                Box(
+                    modifier = Modifier
+                        .width(10.dp)
+                        .align(Alignment.CenterVertically)
+//                                .background(color = Color.Blue)
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .onSizeChanged {
+                                onSizeChangedText.invoke(it)
+                            },
+                        style = caption2,
+                        maxLines = 1,
+                        text = axis.value.toString(),
+                        color = Gray400,
+                        textAlign = TextAlign.End
+                    )
+                }
+                GrayLine(
+                    modifier = Modifier
+                        .padding(start = 18.dp)
+                        .align(Alignment.CenterVertically),
+                    height = if (i == it.lastIndex) 1.dp else 0.5.dp
+                )
+            }
+        }
+    }
+
+}
+
 
 data class Point(val x: Float, val y: Float)
 
-// simple extension function that allows conversion between ranges
-fun Float.mapValueToDifferentRange(
-    inMin: Float,
-    inMax: Float,
-    outMin: Float,
-    outMax: Float
-) = (this - inMin) * (outMax - outMin) / (inMax - inMin) + outMin
-
 @Composable
-fun Card(content: @Composable ColumnScope.() -> Unit) {
+fun Card(
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit
+) {
     val cardShape = RoundedCornerShape(16.dp)
     androidx.compose.material3.Card(
-        modifier = Modifier
+        modifier = modifier
             .shadow(
                 shape = cardShape,
                 spotColor = Color(0x00000000),
@@ -234,25 +265,67 @@ fun GrayLine(
     )
 }
 
+fun Float.calculatePercent(
+    min: Float,
+    max: Float,
+): Float {
+    return (this - min) / (max - min)
+}
+
+
 @Preview(showBackground = true, backgroundColor = 0x0000000)
 @Composable
 private fun PreviewLinearLineGraph() {
     val values = listOf(
-        Point(0f, 0f),
-        Point(1f, 3f),
-        Point(2f, 2f),
-        Point(3f, 2f),
-        Point(4f, 3f),
-        Point(5f, 4f)
+        Point(3f, 6f),
+        Point(6f, 5f),
+        Point(9f, 3f),
+        Point(12f, 10f),
     )
-
-    Card {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = "무릎 아래에 손가락이 5개 정도 들어가고, \u2028무릎이 조금 구부러져 있어요")
-            Spacer(modifier = Modifier.height(24.dp))
-            SuperSimpleLineChartWithLabels(values = values, nWeeks = 4, maxY = 5)
-        }
-
+    val result = mutableListOf<Point>()
+    values.forEach {
+        val x = it.x.calculatePercent(min = 3f, max = 12f)
+        val y = it.y.calculatePercent(min = 0f, max = 10f)
+        result.add(Point(x, y))
     }
 
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+//        .background(color = Color.DarkGray)
+    ) {
+        Card(modifier = Modifier.padding(16.dp)) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = "무릎 아래에 손가락이 5개 정도 들어가고, 무릎이 조금 구부러져 있어요",
+                    style = body1,
+                    fontSize = dpToSp(18.dp),
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                SimpleLineChartWithLabels(
+                    values = result,
+                    xAxisInfo = AxisInfo(
+                        minValue = 0f,
+                        maxValue = 10f,
+                        axisTick = listOf(
+                            AxisTick(0, "3주"),
+                            AxisTick(1, "6주"),
+                            AxisTick(2, "9주"),
+                            AxisTick(3, "12주"),
+                        )
+                    ),
+                    yAxisInfo = AxisInfo(
+                        minValue = 0f,
+                        maxValue = 10f,
+                        axisTick = listOf(
+                            AxisTick(0, "0"),
+                            AxisTick(1, "5"),
+                            AxisTick(2, "10"),
+                        )
+                    )
+                )
+            }
+
+        }
+    }
 }

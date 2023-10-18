@@ -68,7 +68,8 @@ val body1: TextStyle
         fontFamily = pretendardFontFamily,
         fontSize = dpToSp(13.dp),
         lineHeight = dpToSp(27.dp),
-        letterSpacing = dpToSp((-0.2).dp)
+        letterSpacing = dpToSp((-0.2).dp),
+        fontWeight = FontWeight(700)
     )
 
 val body2: TextStyle
