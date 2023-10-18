@@ -37,8 +37,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.ostudio.relaxingsound.ui.theme.Gray400
 import com.ostudio.relaxingsound.ui.theme.Primary500
 import com.ostudio.relaxingsound.ui.theme.body1
@@ -56,69 +56,80 @@ data class AxisInfo(
 data class AxisTick(val position: Int, val value: String)
 
 @Composable
-fun SimpleLineChartWithLabels(
-    values: List<Point>,
+fun SimpleChartWithLabels(
+    modifier: Modifier = Modifier,
     xAxisInfo: AxisInfo,
     yAxisInfo: AxisInfo,
-    modifier: Modifier = Modifier,
+    maxWidth: Dp =10.dp,
+    onSizeChangedText: (IntSize) -> Unit = {},
+    content: @Composable () -> Unit = {},
 ) {
-    var maxWidth by remember { mutableStateOf(IntSize.Zero) }
-
-    LaunchedEffect(key1 = maxWidth, block = {
-        Log.d("@@", "change maxWidth!! $maxWidth@@")
-    })
+    var yAxisLabelHeight by remember { mutableStateOf(0f) }
+//    val height = 89.dp
+    val height = 200.dp
+    val n = yAxisInfo.axisTick.size
+    val yLabelVerticalSpace = (height.value - (n * yAxisLabelHeight)) / n   // 함수로 분리 + 네이밍
+    Log.d("++##","maxWidth ${maxWidth}")
+    Log.d("++##","yLabelVerticalSpace ${yLabelVerticalSpace}")
+    Log.d("++##","n ${n}")
+    Log.d("++##","height ${height}")
+    Log.d("++##","yAxisLabelHeight ${yAxisLabelHeight}")
 
     Column(
         modifier = modifier
-            .height(89.dp)  // 입력으로 높이를 고정
+            .height(height)  // 입력으로 높이를 고정
             .fillMaxWidth()
-//            .background(color = Color.Gray)
     ) {
-        Box(
-            modifier = Modifier.height(IntrinsicSize.Min)
-        ) {
+        Box() {
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .padding(bottom = 13.dp),
-                verticalArrangement = Arrangement.spacedBy(15.dp)
+                verticalArrangement = Arrangement.spacedBy(yLabelVerticalSpace.dp)
             ) {
-                YAxis(axisInfo = yAxisInfo, onSizeChangedText = {
-                    Log.d("++##", "maxWidth change : $it")
-                    if (maxWidth.width <= it.width) {
-                        maxWidth = it
+                YAxis(
+                    axisInfo = yAxisInfo,
+//                    labelWidth = 10.dp,
+                    onSizeChangedText = {
+                        if (maxWidth < it.width.dp) {
+                            onSizeChangedText.invoke(it)
+                            Log.d("++##", "call $it")
+                            Log.d("++##", "maxWidth $maxWidth")
+                        }
+                    },
+                    textHeight = {
+                        yAxisLabelHeight = 15f
                     }
-                })
+                )
             }
+
             XAxis(
                 maxWidth = maxWidth,
                 xAxisInfo = xAxisInfo
             )
-            SimpleLineChart(
-                values = values,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .fillMaxSize()
-                    .padding(start = 29.dp, bottom = 21.dp)
-            )
+
+            content.invoke()
         }
     }
-    val a = pxToDp(pixels = 3f)
 }
 
 
 @Composable
 fun SimpleLineChart(
-    values: List<Point>,
-    modifier: Modifier
+    modifier: Modifier,
+    points: List<Point>,
 ) {
     val outCircle = dpToPx(dp = 4f)
     val inCircle = dpToPx(dp = 2f)
+
     Box(modifier = modifier
-        .padding(top = 8.dp)
+        .padding(top = 8.dp) // y축의
 //        .background(color = Color(0x50FFFF00))
         .drawBehind {
-            val result = values.map {
+            /**
+             * 설정된 비율에 맞게 해당 x,y값을 px로 변환
+             */
+            val relativeCoordinatePoints = points.map {
                 it.copy(
                     x = it.x * size.width,
                     y = size.height - it.y * size.height
@@ -126,7 +137,7 @@ fun SimpleLineChart(
             }
 
             val path = Path()
-            result.forEachIndexed { index, point ->
+            relativeCoordinatePoints.forEachIndexed { index, point ->
                 if (index == 0) {
                     // 기준점 이동
                     path.moveTo(point.x, point.y)
@@ -136,15 +147,15 @@ fun SimpleLineChart(
                 }
             }
 
-            // 이어진 직선의 UI 커스텀
+            // 이어진 직선의 UI
             drawPath(
                 path = path,
                 color = Primary500,
                 style = Stroke(width = 4f)
             )
 
-            // point indicator
-            result.forEach { point ->
+            // 좌표 indicator
+            relativeCoordinatePoints.forEach { point ->
                 drawCircle(
                     color = Primary500,
                     center = Offset(point.x, point.y),
@@ -162,24 +173,27 @@ fun SimpleLineChart(
 
 @Composable
 private fun BoxScope.XAxis(
-    maxWidth: IntSize,
+    maxWidth: Dp,
     xAxisInfo: AxisInfo
 ) {
     Row(
         modifier = Modifier
             .align(Alignment.BottomStart)
-            .padding(start = (maxWidth.width).dp),
     ) {
-        xAxisInfo.axisTick.forEachIndexed { i, value ->
+        Spacer(modifier = Modifier.width(maxWidth))
+        xAxisInfo.axisTick.forEachIndexed { i, it ->
             if (xAxisInfo.axisTick.lastIndex == i) {
                 Text(
-                    text = value.value.toString(),
+                    text = it.value,
                     style = caption2,
                     color = Gray400
                 )
             } else {
                 Text(
-                    modifier = Modifier.weight(1f), text = value.value.toString(),
+                    modifier = Modifier
+                        .weight(1f)
+                        .background(color = Color.Blue),
+                    text = it.value,
                     style = caption2,
                     color = Gray400
                 )
@@ -188,37 +202,44 @@ private fun BoxScope.XAxis(
     }
 }
 
+/**
+ * Y축 라벨과 회색 가로선
+ */
 @Composable
 private fun YAxis(
     axisInfo: AxisInfo,
+    labelWidth: Dp = 10.dp, // TODO  현재 고정값 가변으로 변경 필요
     onSizeChangedText: (IntSize) -> Unit = {},
+    textHeight: (Float) -> Unit = {}
 ) {
+    textHeight.invoke(caption2.lineHeight.value)
+    Log.d("++##", "YAxis : $labelWidth")
+
     axisInfo.axisTick.asReversed().also {
         it.forEachIndexed { i, axis ->
-            Row(
-            ) {
+            Row {
                 Box(
                     modifier = Modifier
-                        .width(10.dp)
+                        .width(labelWidth)
                         .align(Alignment.CenterVertically)
-//                                .background(color = Color.Blue)
                 ) {
                     Text(
                         modifier = Modifier
+                            .height(15.dp)
                             .align(Alignment.CenterEnd)
-                            .onSizeChanged {
-                                onSizeChangedText.invoke(it)
+                            .onSizeChanged { intSize ->
+                                onSizeChangedText.invoke(intSize)
                             },
                         style = caption2,
                         maxLines = 1,
-                        text = axis.value.toString(),
+                        text = axis.value,
                         color = Gray400,
                         textAlign = TextAlign.End
                     )
                 }
                 GrayLine(
                     modifier = Modifier
-                        .padding(start = 18.dp)
+                        .padding(start = 18.dp, end = 9.dp)
                         .align(Alignment.CenterVertically),
                     height = if (i == it.lastIndex) 1.dp else 0.5.dp
                 )
@@ -282,17 +303,53 @@ private fun PreviewLinearLineGraph() {
         Point(9f, 3f),
         Point(12f, 10f),
     )
+
+    val avgValues = listOf(
+        Point(3f, 8f),
+        Point(6f, 2f),
+        Point(9f, 7f),
+        Point(12f, 4f),
+    )
+
+    val xAxisInfo = AxisInfo(
+        minValue = 0f,
+        maxValue = 10f,
+        axisTick = listOf(
+            AxisTick(0, "3주"),
+            AxisTick(1, "6주"),
+            AxisTick(2, "9주"),
+            AxisTick(3, "12주"),
+        )
+    )
+    val yAxisInfo = AxisInfo(
+        minValue = 0f,
+        maxValue = 10f,
+        axisTick = listOf(
+            AxisTick(0, "0"),
+            AxisTick(1, "5"),
+            AxisTick(2, "10"),
+        )
+    )
+
     val result = mutableListOf<Point>()
+    val avgResult = mutableListOf<Point>()
+
     values.forEach {
         val x = it.x.calculatePercent(min = 3f, max = 12f)
         val y = it.y.calculatePercent(min = 0f, max = 10f)
         result.add(Point(x, y))
     }
 
+    avgValues.forEach {
+        val x = it.x.calculatePercent(min = 3f, max = 12f)
+        val y = it.y.calculatePercent(min = 0f, max = 10f)
+        avgResult.add(Point(x, y))
+    }
+
+    var maxWidth by remember { mutableStateOf(0.dp) }
     Box(
         modifier = Modifier
             .fillMaxSize()
-//        .background(color = Color.DarkGray)
     ) {
         Card(modifier = Modifier.padding(16.dp)) {
             Column(modifier = Modifier.padding(16.dp)) {
@@ -302,27 +359,28 @@ private fun PreviewLinearLineGraph() {
                     fontSize = dpToSp(18.dp),
                 )
                 Spacer(modifier = Modifier.height(24.dp))
-                SimpleLineChartWithLabels(
-                    values = result,
-                    xAxisInfo = AxisInfo(
-                        minValue = 0f,
-                        maxValue = 10f,
-                        axisTick = listOf(
-                            AxisTick(0, "3주"),
-                            AxisTick(1, "6주"),
-                            AxisTick(2, "9주"),
-                            AxisTick(3, "12주"),
+                SimpleChartWithLabels(
+                    xAxisInfo = xAxisInfo,
+                    yAxisInfo = yAxisInfo,
+//                    maxWidth = maxWidth,
+                    onSizeChangedText = {
+                        maxWidth = it.width.dp
+                    },
+                    content = {
+                        SimpleLineChart(
+                            points = result,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(start = 29.dp, bottom = 21.dp, end = 10.dp)
                         )
-                    ),
-                    yAxisInfo = AxisInfo(
-                        minValue = 0f,
-                        maxValue = 10f,
-                        axisTick = listOf(
-                            AxisTick(0, "0"),
-                            AxisTick(1, "5"),
-                            AxisTick(2, "10"),
+
+                        SimpleLineChart(
+                            points = avgResult,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(start = 29.dp, bottom = 21.dp, end = 10.dp)
                         )
-                    )
+                    }
                 )
             }
 
