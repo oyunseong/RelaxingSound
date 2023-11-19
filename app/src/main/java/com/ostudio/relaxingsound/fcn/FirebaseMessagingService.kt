@@ -12,6 +12,7 @@ import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import com.ostudio.relaxingsound.AlarmActivity
 import com.ostudio.relaxingsound.MainActivity
 import com.ostudio.relaxingsound.R
 
@@ -28,8 +29,7 @@ class FirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
-
-        if (message.data.isNotEmpty()) {
+        if (message.notification != null) {
             sendNotification(message)
         }
     }
@@ -77,6 +77,14 @@ class FirebaseMessagingService : FirebaseMessagingService() {
 
         // 알림 생성
         notificationManager.notify(uniqueId, notificationBuilder.build())
+
+        startActivity()
+    }
+
+    private fun startActivity() {
+        val intent = Intent(this, AlarmActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
     }
 
     private fun registerTokenOnServer(token: String) {

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,7 +36,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import com.ostudio.relaxingsound.ui.theme.Gray400
 import com.ostudio.relaxingsound.ui.theme.Primary500
@@ -45,12 +43,11 @@ import com.ostudio.relaxingsound.ui.theme.body1
 import com.ostudio.relaxingsound.ui.theme.caption2
 import com.ostudio.relaxingsound.ui.theme.dpToPx
 import com.ostudio.relaxingsound.ui.theme.dpToSp
-import com.ostudio.relaxingsound.ui.theme.pxToDp
 
 data class AxisInfo(
     val minValue: Float,
     val maxValue: Float,
-    val axisTick: List<AxisTick>,
+    val axisLabel: List<AxisTick>,
 )
 
 data class AxisTick(val position: Int, val value: String)
@@ -58,26 +55,31 @@ data class AxisTick(val position: Int, val value: String)
 @Composable
 fun SimpleChartWithLabels(
     modifier: Modifier = Modifier,
+    height: Int = 89,
     xAxisInfo: AxisInfo,
     yAxisInfo: AxisInfo,
-    maxWidth: Dp =10.dp,
+    maxWidth: Dp = 10.dp,
     onSizeChangedText: (IntSize) -> Unit = {},
     content: @Composable () -> Unit = {},
 ) {
+
     var yAxisLabelHeight by remember { mutableStateOf(0f) }
-//    val height = 89.dp
-    val height = 200.dp
-    val n = yAxisInfo.axisTick.size
-    val yLabelVerticalSpace = (height.value - (n * yAxisLabelHeight)) / n   // 함수로 분리 + 네이밍
-    Log.d("++##","maxWidth ${maxWidth}")
-    Log.d("++##","yLabelVerticalSpace ${yLabelVerticalSpace}")
-    Log.d("++##","n ${n}")
-    Log.d("++##","height ${height}")
-    Log.d("++##","yAxisLabelHeight ${yAxisLabelHeight}")
+    val n = yAxisInfo.axisLabel.size
+    var yLabelVerticalSpace = 0f
+    LaunchedEffect(key1 = yAxisLabelHeight, block = {
+        yLabelVerticalSpace = (height - (n * yAxisLabelHeight)) / n   // 함수로 분리 + 네이밍
+    })
+
+
+    Log.d("++##", "maxWidth ${maxWidth}")
+    Log.d("++##", "yLabelVerticalSpace ${yLabelVerticalSpace}")
+    Log.d("++##", "n ${n}")
+    Log.d("++##", "height ${height}")
+    Log.d("++##", "yAxisLabelHeight ${yAxisLabelHeight}")
 
     Column(
         modifier = modifier
-            .height(height)  // 입력으로 높이를 고정
+            .height(height.dp)  // 입력으로 높이를 고정
             .fillMaxWidth()
     ) {
         Box() {
@@ -181,8 +183,8 @@ private fun BoxScope.XAxis(
             .align(Alignment.BottomStart)
     ) {
         Spacer(modifier = Modifier.width(maxWidth))
-        xAxisInfo.axisTick.forEachIndexed { i, it ->
-            if (xAxisInfo.axisTick.lastIndex == i) {
+        xAxisInfo.axisLabel.forEachIndexed { i, it ->
+            if (xAxisInfo.axisLabel.lastIndex == i) {
                 Text(
                     text = it.value,
                     style = caption2,
@@ -215,7 +217,7 @@ private fun YAxis(
     textHeight.invoke(caption2.lineHeight.value)
     Log.d("++##", "YAxis : $labelWidth")
 
-    axisInfo.axisTick.asReversed().also {
+    axisInfo.axisLabel.asReversed().also {
         it.forEachIndexed { i, axis ->
             Row {
                 Box(
@@ -314,7 +316,7 @@ private fun PreviewLinearLineGraph() {
     val xAxisInfo = AxisInfo(
         minValue = 0f,
         maxValue = 10f,
-        axisTick = listOf(
+        axisLabel = listOf(
             AxisTick(0, "3주"),
             AxisTick(1, "6주"),
             AxisTick(2, "9주"),
@@ -324,7 +326,7 @@ private fun PreviewLinearLineGraph() {
     val yAxisInfo = AxisInfo(
         minValue = 0f,
         maxValue = 10f,
-        axisTick = listOf(
+        axisLabel = listOf(
             AxisTick(0, "0"),
             AxisTick(1, "5"),
             AxisTick(2, "10"),

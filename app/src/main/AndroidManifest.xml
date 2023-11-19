@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <meta-data
         android:name="firebase_messaging_auto_init_enabled"
@@ -44,10 +45,18 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".AlarmActivity"
+            android:label="close alarm activity" />
+
         <receiver
             android:name=".alarm.AlarmReceiver"
             android:enabled="true"
             android:exported="false" />
+
+        <service
+            android:name=".alarm.AlarmService"
+            android:enabled="true" />
 
         <service
             android:name=".fcn.FirebaseMessagingService"
