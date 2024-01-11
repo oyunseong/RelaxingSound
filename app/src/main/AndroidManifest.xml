@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <meta-data
         android:name="firebase_messaging_auto_init_enabled"
@@ -49,6 +51,10 @@
             android:name=".AlarmActivity"
             android:label="close alarm activity" />
 
+        <service
+            android:name=".media.recorder.RecorderService"
+            android:enabled="true"
+            android:foregroundServiceType="mediaProjection" />
         <receiver
             android:name=".alarm.AlarmReceiver"
             android:enabled="true"

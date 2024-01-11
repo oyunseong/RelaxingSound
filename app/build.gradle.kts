@@ -65,6 +65,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("com.google.firebase:firebase-messaging-ktx:23.2.1")
+    implementation("androidx.appcompat:appcompat:1.6.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -95,7 +96,11 @@ dependencies {
 
     // Glide
     implementation("com.github.bumptech.glide:glide:4.15.1")
-    implementation ("com.google.accompanist:accompanist-permissions:0.30.0")
+    implementation("com.google.accompanist:accompanist-permissions:0.30.0")
 
+    implementation("com.github.HBiSoft:HBRecorder:3.0.1")
+
+    implementation("io.coil-kt:coil-compose:2.2.2")
+    implementation("io.coil-kt:coil-svg:2.2.2")
 
 }
