@@ -103,4 +103,11 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.2.2")
     implementation("io.coil-kt:coil-svg:2.2.2")
 
+    val vicoVersion = "1.13.1"
+    // vico 차트 라이브러리
+    implementation("com.patrykandpatrick.vico:compose:${vicoVersion}")
+    implementation("com.patrykandpatrick.vico:compose-m3:${vicoVersion}")
+    implementation("com.patrykandpatrick.vico:core:${vicoVersion}")
+    implementation("com.patrykandpatrick.vico:views:${vicoVersion}")
+
 }
