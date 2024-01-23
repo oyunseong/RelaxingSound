@@ -23,6 +23,7 @@ val bottomBarHeight = 60.dp
 val screens = listOf(
     BottomNavItem.Home,
     BottomNavItem.Alarm,
+    BottomNavItem.Test,
 )
 
 @Composable

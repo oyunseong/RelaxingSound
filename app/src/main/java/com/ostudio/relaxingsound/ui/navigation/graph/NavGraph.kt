@@ -10,6 +10,7 @@ import com.ostudio.relaxingsound.snackbar.SnackbarManager
 import com.ostudio.relaxingsound.ui.alarm.AlarmScreen
 import com.ostudio.relaxingsound.ui.home.HomeScreen
 import com.ostudio.relaxingsound.ui.navigation.model.NavScreen
+import com.ostudio.relaxingsound.ui.test.TestScreen
 
 @Composable
 fun NavGraph(
@@ -28,6 +29,9 @@ fun NavGraph(
 
         composable(route = NavScreen.ALARM.name){
             AlarmScreen()
+        }
+        composable(route = NavScreen.TEST.name){
+            TestScreen()
         }
 
     }

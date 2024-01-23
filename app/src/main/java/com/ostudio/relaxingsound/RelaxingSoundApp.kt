@@ -17,6 +17,8 @@ import com.ostudio.relaxingsound.extensions.showToast
 import com.ostudio.relaxingsound.snackbar.Snackbar
 import com.ostudio.relaxingsound.snackbar.SnackbarManager
 import com.ostudio.relaxingsound.snackbar.SnackbarMessage
+import com.ostudio.relaxingsound.toast.StackToastManager
+import com.ostudio.relaxingsound.toast.Toast
 import com.ostudio.relaxingsound.ui.components.BottomNavigationBar
 import com.ostudio.relaxingsound.ui.components.bottomBarHeight
 import com.ostudio.relaxingsound.ui.navigation.graph.NavGraph
@@ -67,4 +69,14 @@ fun RelaxingSoundApp(
             })
         }
     }
+
+    val toast = StackToastManager.toast.collectAsState()
+
+    Toast(
+        messages = toast.value,
+        pop = {
+            StackToastManager.clearMessage(it)
+        }
+    )
+
 }

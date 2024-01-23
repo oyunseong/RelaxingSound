@@ -3,6 +3,7 @@ package com.ostudio.relaxingsound.ui.home
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Button
@@ -31,6 +32,7 @@ import com.ostudio.relaxingsound.snackbar.SnackbarDuration
 import com.ostudio.relaxingsound.snackbar.SnackbarManager
 import com.ostudio.relaxingsound.snackbar.SnackbarMessage
 import com.ostudio.relaxingsound.snackbar.SnackbarMessageType
+import com.ostudio.relaxingsound.toast.showToast
 import com.ostudio.relaxingsound.ui.InfiniteRotatingImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -60,6 +62,30 @@ fun HomeScreen() {
         }) {
             Text(text = "네트워크")
         }
+
+        Row {
+            Button(onClick = {
+                showToast("hi1")
+            }) {
+                Text(text = "토스트1")
+            }
+            Button(onClick = {
+                showToast("hi2")
+            }) {
+                Text(text = "토스트2")
+            }
+            Button(onClick = {
+                showToast("hi3")
+            }) {
+                Text(text = "토스트3")
+            }
+            Button(onClick = {
+                showToast("hi4")
+            }) {
+                Text(text = "토스트4")
+            }
+        }
+
 //        ExoVideoPlayer()
 
         Button(onClick = {

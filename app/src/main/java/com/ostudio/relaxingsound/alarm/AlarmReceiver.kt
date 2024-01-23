@@ -28,7 +28,7 @@ class AlarmReceiver : BroadcastReceiver() {
         val serviceIntent = Intent(context, AlarmService::class.java)
         serviceIntent.putExtra("state", test1)
 
-        context?.startService(serviceIntent)
+//        context?.startService(serviceIntent)
     }
 
 //    override fun onReceive(context: Context?, intent: Intent?) {

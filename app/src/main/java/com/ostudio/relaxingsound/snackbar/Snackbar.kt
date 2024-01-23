@@ -61,7 +61,7 @@ fun Snackbar(
 }
 
 @Composable
-private fun SnackbarContent(
+fun SnackbarContent(
     modifier: Modifier = Modifier,
     message: String = "",
     type: SnackbarMessageType = SnackbarMessageType.NONE,
@@ -133,7 +133,7 @@ private fun SnackbarContent(
 
 
 @Composable
-private fun SnackbarIcon(type: SnackbarMessageType) {
+fun SnackbarIcon(type: SnackbarMessageType) {
     when (type) {
         SnackbarMessageType.SUCCESS -> {
             Image(

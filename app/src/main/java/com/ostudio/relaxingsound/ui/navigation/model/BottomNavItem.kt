@@ -16,4 +16,10 @@ sealed class BottomNavItem(
         icon = androidx.core.R.drawable.ic_call_answer,
         screen = NavScreen.ALARM
     )
+
+    object Test : BottomNavItem(
+        title = "테스트",
+        icon = androidx.core.R.drawable.ic_call_answer,
+        screen = NavScreen.TEST
+    )
 }
