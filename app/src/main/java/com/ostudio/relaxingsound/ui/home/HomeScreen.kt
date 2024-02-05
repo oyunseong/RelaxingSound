@@ -1,5 +1,6 @@
 package com.ostudio.relaxingsound.ui.home
 
+import android.app.Activity
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -34,6 +35,7 @@ import com.ostudio.relaxingsound.snackbar.SnackbarMessage
 import com.ostudio.relaxingsound.snackbar.SnackbarMessageType
 import com.ostudio.relaxingsound.toast.showToast
 import com.ostudio.relaxingsound.ui.InfiniteRotatingImage
+import com.ostudio.relaxingsound.ui.dopamine.requestUsageStatsPermission
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -44,6 +46,7 @@ fun HomeScreen() {
     val scope = rememberCoroutineScope()
 
     var progress by remember { mutableStateOf(false) }
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
 
     }
@@ -86,13 +89,19 @@ fun HomeScreen() {
             }
         }
 
-//        ExoVideoPlayer()
+        Button(onClick = {
+            val activity = context as Activity
+            activity.requestUsageStatsPermission(9584)
+        }) {
+            Text(text = "설정")
+        }
 
         Button(onClick = {
             progress = !progress
         }) {
             Text(text = "프로그래스바")
         }
+
         if (progress) {
             InfiniteRotatingImage(image = R.drawable.img_loader)
 //            RotateImage()

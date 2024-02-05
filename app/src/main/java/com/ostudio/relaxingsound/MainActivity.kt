@@ -1,7 +1,12 @@
 package com.ostudio.relaxingsound
 
 import android.app.AlarmManager
+import android.app.AppOpsManager
+import android.app.AppOpsManager.MODE_ALLOWED
+import android.app.AppOpsManager.OPSTR_GET_USAGE_STATS
 import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -12,6 +17,12 @@ import com.ostudio.relaxingsound.ui.theme.RelaxingSoundTheme
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
+import android.os.Process
+import android.util.AttributeSet
+import android.view.View
+import com.ostudio.relaxingsound.extensions.showToast
+import com.ostudio.relaxingsound.ui.dopamine.isUsageStatsPermission
+import com.ostudio.relaxingsound.ui.dopamine.requestUsageStatsPermission
 
 
 //@AndroidEntryPoint
@@ -40,8 +51,11 @@ class MainActivity : ComponentActivity() {
         bufferedWriter.close()
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("++##", "onCreate")
+
         setContent {
             RelaxingSoundTheme {
                 RelaxingSoundApp(
@@ -74,6 +88,25 @@ class MainActivity : ComponentActivity() {
 
     }
 
+    override fun onStart() {
+        super.onStart()
+        Log.d("++##", "onStart")
+        checkAndRequestUsageStatsPermission()
+
+    }
+
+    private fun checkAndRequestUsageStatsPermission() {
+        val tag = "MainActivity"
+        if (this.isUsageStatsPermission()) {
+            Log.d(tag, "has UsageStats Permission")
+            showToast("권한 있음")
+        } else {
+            Log.d(tag, "UsageStats permission not granted")
+            this.requestUsageStatsPermission()
+        }
+    }
+
+
     override fun onDestroy() {
         super.onDestroy()
 //        SnackbarManager.clear()
@@ -83,13 +116,12 @@ class MainActivity : ComponentActivity() {
 //        screenRecorder.startRecording()
 //    }
 //
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        super.onActivityResult(requestCode, resultCode, data)
-//
-//        when (requestCode) {
-//            ScreenRecorder.SCREEN_RECORD_REQUEST_CODE -> {
-//                startRecording()
-//            }
-//        }
-//    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        when (requestCode) {
+
+        }
+    }
+
 }

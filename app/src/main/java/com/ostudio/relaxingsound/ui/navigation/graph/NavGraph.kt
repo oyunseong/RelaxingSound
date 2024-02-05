@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.ostudio.relaxingsound.snackbar.SnackbarManager
 import com.ostudio.relaxingsound.ui.alarm.AlarmScreen
+import com.ostudio.relaxingsound.ui.dopamine.DopamineDetoxScreen
 import com.ostudio.relaxingsound.ui.home.HomeScreen
 import com.ostudio.relaxingsound.ui.navigation.model.NavScreen
 import com.ostudio.relaxingsound.ui.test.TestScreen
@@ -32,6 +33,9 @@ fun NavGraph(
         }
         composable(route = NavScreen.TEST.name){
             TestScreen()
+        }
+        composable(route = NavScreen.DOPAMINE.name){
+            DopamineDetoxScreen()
         }
 
     }

@@ -22,4 +22,10 @@ sealed class BottomNavItem(
         icon = androidx.core.R.drawable.ic_call_answer,
         screen = NavScreen.TEST
     )
+
+    object Dopamine : BottomNavItem(
+        title = "도파민",
+        icon = androidx.core.R.drawable.ic_call_answer_video,
+        screen = NavScreen.DOPAMINE
+    )
 }

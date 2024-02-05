@@ -24,6 +24,7 @@ val screens = listOf(
     BottomNavItem.Home,
     BottomNavItem.Alarm,
     BottomNavItem.Test,
+    BottomNavItem.Dopamine,
 )
 
 @Composable
